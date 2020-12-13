@@ -1,31 +1,40 @@
-import React, { forwardRef, RefObject, useEffect } from 'react'
+import React, { createRef, useContext, useEffect } from 'react'
 import styled from 'styled-components'
-
-interface IWebCam {
-	width: number,
-	height: number
-}
+import { IODContext, ODContext } from "./ObjectDetector";
 
 const Video = styled.video`
+  display: none;
+  width: ${props => props.width};
+  height: ${props => props.height};
   background-color: #666;
 `
 
-export const WebCam = forwardRef<HTMLVideoElement, IWebCam>((props, ref) => {
+export const WebCam = () => {
+	const ref = createRef<HTMLVideoElement>()
+	const context = useContext(ODContext)
+	const {viewport, setVideo} = context as IODContext
+
 	useEffect(() => {
+
 		const loadCamera = async () => {
-			if (navigator.mediaDevices.getUserMedia && ref) {
-				try {
-					const stream = await navigator.mediaDevices.getUserMedia({ video: true })
-					// @ts-ignore
-					ref.current.srcObject = stream;
-				} catch(e) {
-					console.log("Something went wrong!", e);
-				}
+			if (!ref) return
+			if (!ref.current) return
+			if (!navigator.mediaDevices.getUserMedia) return
+
+			const video = ref.current
+
+			try {
+				const stream = await navigator.mediaDevices.getUserMedia({video: true})
+				video.srcObject = stream;
+				setVideo(video)
+				await video.play()
+			} catch (e) {
+				console.log("Something went wrong!", e);
 			}
 		}
 
 		loadCamera()
-	}, [ref])
+	}, [ ref, setVideo ])
 
-  return <Video autoPlay={true} ref={ref} />;
-});
+	return <Video autoPlay={true} width={viewport.width} height={viewport.height} ref={ref}/>;
+};

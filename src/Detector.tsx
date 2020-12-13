@@ -1,17 +1,28 @@
-import React, { createRef } from 'react'
-import { WebCam } from "./WebCam";
+import React, { useCallback, useContext, useEffect } from 'react'
+import { IObject, IODContext, ODContext } from "./ObjectDetector";
 
-export interface IDetectorProps {
-}
+export const Detector = () => {
+	const context = useContext(ODContext)
+	const { setObjects, detector, video } = context as IODContext
+	const detect = useCallback((video: HTMLVideoElement | undefined, detector: any) => {
+		if (!video) return
+		if (!detector) return
 
-export const Detector = (props: IDetectorProps) => {
-	const width = 400
-	const height = 300
-	const webCamRef = createRef<HTMLVideoElement>()
+		detector.detect(video, (err: string, objects: IObject[]) => {
+			if (err) {
+				console.error(err);
+			}
+			setObjects(objects)
+		})
+	}, [detector, video])
 
-  return (
-    <>
-	    <WebCam width={width} height={height} ref={webCamRef} />
-    </>
-  );
+	useEffect(() => {
+		const timer = setInterval(() => {
+			detect(video, detector)
+		}, 100)
+
+		return () => clearInterval(timer)
+	}, [setObjects, detector, video])
+
+  return <></>;
 };
