@@ -15,7 +15,6 @@ export const WebCam = () => {
 	const {viewport, setVideo} = context as IODContext
 
 	useEffect(() => {
-
 		const loadCamera = async () => {
 			if (!ref) return
 			if (!ref.current) return

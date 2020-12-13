@@ -1,9 +1,8 @@
-import React, { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from 'react'
+import React, { createContext, Dispatch, ReactNode, SetStateAction, useState } from 'react'
 import { Detector } from "./Detector";
 import { DetectorLoader } from "./DetectorLoader";
 import { Rectangles } from "./Rectangles";
 import { WebCam } from "./WebCam";
-const ml5 = require('ml5')
 
 export interface IObject {
 	label: string,
@@ -29,11 +28,11 @@ export interface IODContext {
 }
 
 const dummyObject: IObject = {
-	label: '테스트',
+	label: '준비중...',
 	x: 0,
 	y: 0,
-	width: 100,
-	height: 100
+	width: 75,
+	height: 25
 }
 
 export const ODContext = createContext<IODContext | null>(null)
@@ -43,8 +42,8 @@ const ODContextProvider = ({children}: { children: ReactNode }) => {
 	const [ video, setVideo ] = useState<HTMLVideoElement>()
 	const [ detector, setDetector ] = useState()
 	const viewport = {
-		width: 480,
-		height: 360
+		width: 800,
+		height: 600
 	}
 
 	return <ODContext.Provider

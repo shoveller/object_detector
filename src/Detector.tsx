@@ -19,7 +19,7 @@ export const Detector = () => {
 	useEffect(() => {
 		const timer = setInterval(() => {
 			detect(video, detector)
-		}, 100)
+		}, 1200)
 
 		return () => clearInterval(timer)
 	}, [setObjects, detector, video])

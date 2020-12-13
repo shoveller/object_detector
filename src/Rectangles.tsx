@@ -33,7 +33,6 @@ export const Rectangles = () => {
 	useEffect(() => {
 		if (!ref) return
 		if (!video) return
-		console.log('video', video);
 
 		// @ts-ignore
 		const canvas = ref.current as HTMLCanvasElement
