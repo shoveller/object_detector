@@ -1,62 +1,51 @@
-import React, { createContext, Dispatch, ReactNode, SetStateAction, useState } from 'react'
-import { Detector } from "./Detector";
-import { DetectorLoader } from "./DetectorLoader";
-import { Rectangles } from "./Rectangles";
-import { WebCam } from "./WebCam";
+import React, { ReactElement, useContext, useEffect } from 'react'
+import { CanvasCameraContext, ICanvasCameraContext } from "./CanvasCamera";
+const ml5 = require('ml5')
 
-export interface IObject {
-	label: string,
-	x: number,
-	y: number,
-	width: number,
+export interface IDetectResult {
+	label: string
+	x: number
+	y: number
+	width: number
 	height: number
 }
 
-export interface IODContext {
-	viewport: {
-		width: number,
-		height: number
-	},
-	detector?: any,
-	setDetector: Dispatch<SetStateAction<any>>
-	objects?: IObject[],
-	setObjects: Dispatch<SetStateAction<IObject[]>>
-	canvas?: HTMLCanvasElement
-	setCanvas: Dispatch<SetStateAction<HTMLCanvasElement | undefined>>
-	video?: HTMLVideoElement
-	setVideo: Dispatch<SetStateAction<HTMLVideoElement | undefined>>
+interface IObjectDetector {
+  children?: ReactElement
 }
 
-const dummyObject: IObject = {
-	label: '준비중...',
-	x: 0,
-	y: 0,
-	width: 75,
-	height: 25
-}
+const getObjectDetector = async () => await ml5.objectDetector('cocossd', () => console.log('start'))
 
-export const ODContext = createContext<IODContext | null>(null)
-const ODContextProvider = ({children}: { children: ReactNode }) => {
-	const [ objects, setObjects ] = useState<IObject[]>([ dummyObject ])
-	const [ canvas, setCanvas ] = useState<HTMLCanvasElement>()
-	const [ video, setVideo ] = useState<HTMLVideoElement>()
-	const [ detector, setDetector ] = useState()
-	const viewport = {
-		width: 800,
-		height: 600
-	}
+export const ObjectDetector = (props: IObjectDetector) => {
+  const { video } = useContext<ICanvasCameraContext>(CanvasCameraContext)
 
-	return <ODContext.Provider
-		value={{detector, setDetector, viewport, objects, setObjects, canvas, setCanvas, video, setVideo}}>{children}</ODContext.Provider>
-}
+  useEffect(() => {
+    let timer = 0
+    const buildDetector = async () => {
+      const detector = await getObjectDetector()
+      const detect = (video: HTMLVideoElement | undefined, detector: any) => {
+        if (!video) return
+        if (!detector) return
+        if (!detector.detect) return
 
-export const ObjectDetector = () => {
-	return (
-		<ODContextProvider>
-			<WebCam/>
-			<Rectangles/>
-			<DetectorLoader />
-			<Detector />
-		</ODContextProvider>
-	);
+        detector.detect(video, (err: string, results: IDetectResult[]) => {
+          if (err) {
+            console.error(err);
+          }
+          console.log(results);
+          // setObjects(objects)
+        })
+      }
+
+      timer = setInterval(() => {
+        detect(video, detector)
+      }, 1000 /30)
+    }
+
+    buildDetector()
+
+    return () => clearInterval(timer)
+  }, [video])
+
+  return <>{props.children}</>;
 };

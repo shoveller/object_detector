@@ -1,28 +1,35 @@
-import React, { useCallback, useContext, useEffect } from 'react'
-import { IObject, IODContext, ODContext } from "./ObjectDetector";
+// import React, { useCallback, useContext, useEffect } from 'react'
+// import { IObject, IODContext, ODContext } from "./ObjectDetector2";
+//
+// export const Detector = () => {
+// 	const context = useContext(ODContext)
+// 	const { setObjects, detector, video } = context as IODContext
+// 	const detect = useCallback((video: HTMLVideoElement | undefined, detector: any) => {
+// 		if (!video) return
+// 		if (!detector) return
+//
+// 		detector.detect(video, (err: string, objects: IObject[]) => {
+// 			if (err) {
+// 				console.error(err);
+// 			}
+// 			setObjects(objects)
+// 		})
+// 	}, [detector, video])
+//
+// 	useEffect(() => {
+// 		const timer = setInterval(() => {
+// 			detect(video, detector)
+// 		}, 1200)
+//
+// 		return () => clearInterval(timer)
+// 	}, [setObjects, detector, video])
+//
+//   return <></>;
+// };
+
+import React from 'react'
 
 export const Detector = () => {
-	const context = useContext(ODContext)
-	const { setObjects, detector, video } = context as IODContext
-	const detect = useCallback((video: HTMLVideoElement | undefined, detector: any) => {
-		if (!video) return
-		if (!detector) return
-
-		detector.detect(video, (err: string, objects: IObject[]) => {
-			if (err) {
-				console.error(err);
-			}
-			setObjects(objects)
-		})
-	}, [detector, video])
-
-	useEffect(() => {
-		const timer = setInterval(() => {
-			detect(video, detector)
-		}, 1200)
-
-		return () => clearInterval(timer)
-	}, [setObjects, detector, video])
-
   return <></>;
 };
+
