@@ -12,12 +12,14 @@ import React, {
 interface ICanvasCameraProps {
 	width: number
 	height: number
-  onDraw?: (
-    video: HTMLVideoElement,
-    ctx: CanvasRenderingContext2D,
-    width: number,
-    height: number,
-  ) => void
+	onReady?: () => Promise<any>
+	onDraw?: (
+		video: HTMLVideoElement,
+		ctx: CanvasRenderingContext2D,
+		width: number,
+		height: number,
+		modelRunner?: any,
+	) => Promise<any>
 	children?: ReactElement
 }
 
@@ -53,21 +55,23 @@ const drawFrame = (
 	ctx: CanvasRenderingContext2D,
 	width: number,
 	height: number,
-	onDraw?: (
-		video: HTMLVideoElement,
-		ctx: CanvasRenderingContext2D,
-		width: number,
-		height: number,
-	) => void,
+  modelRunner?: any,
+  onDraw?: (
+    video: HTMLVideoElement,
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    modelRunner?: any,
+  ) => Promise<any>,
 ) => {
 	if (video.paused) return
 	if (video.ended) return
 
 	ctx.drawImage(video, 0, 0, width, height)
 	if (onDraw) {
-		onDraw(video, ctx, width, height)
+		onDraw(video, ctx, width, height, modelRunner)
 	}
-	setTimeout(() => drawFrame(video, ctx, width, height, onDraw), flameRate)
+	setTimeout(() => drawFrame(video, ctx, width, height, modelRunner, onDraw), flameRate)
 }
 
 const createVideo = () => document.createElement('video')
@@ -80,11 +84,23 @@ const setup = async (
 	video: HTMLVideoElement,
 	width: number,
 	height: number,
+	onReady?: () => Promise<any>,
+	onDraw?: (
+		video: HTMLVideoElement,
+		ctx: CanvasRenderingContext2D,
+		width: number,
+		height: number,
+		modelRunner?: any,
+	) => Promise<any>,
 ) => {
+  let modelRunner: any
+  if (onReady) {
+    modelRunner = await onReady()
+  }
 	video.srcObject = await getCameraStream()
 	video.addEventListener('loadeddata', function () {
 		video.play()
-		setTimeout(() => drawFrame(video, ctx, width, height), flameRate)
+		setTimeout(() => drawFrame(video, ctx, width, height, modelRunner, onDraw), flameRate)
 	})
 }
 
@@ -111,15 +127,15 @@ const CanvasCameraContextProvider = (props: ICanvasCameraContextProvider) => {
 export const CanvasCamera = (props: ICanvasCameraProps) => {
 	const ref = createRef<HTMLCanvasElement>()
 	const video = createVideo()
-	const { width, height, children } = props
+	const { width, height, children, onReady, onDraw } = props
 	useEffect(() => {
 		const ctx = get2Dctx(ref)
 		if (!ctx) {
 			return
 		}
 
-		setup(ctx, video, width, height)
-	}, [ref, video, width, height])
+		setup(ctx, video, width, height, onReady, onDraw)
+	}, [ref, video, width, height, onDraw])
 	const ctx = get2Dctx(ref)
 
 	return (
