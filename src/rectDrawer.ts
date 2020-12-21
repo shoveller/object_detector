@@ -1,13 +1,13 @@
 import { IDetectResult } from './objectDetector';
 
-export const draw = (ctx: CanvasRenderingContext2D, video: HTMLVideoElement, objects?: IDetectResult[]) => {
+export const draw = (width: number, height: number, ctx: CanvasRenderingContext2D, video: HTMLVideoElement, objects?: IDetectResult[]) => {
 	if (!objects?.length) return
 
 	// Clear part of the canvas
 	ctx.fillStyle = "#000000"
-	ctx.fillRect(0,0, 600, 400);
+	ctx.fillRect(0,0, width, height);
 
-	ctx.drawImage(video, 0, 0, 600, 400);
+	ctx.drawImage(video, 0, 0, width, height);
 
 	for (let i = 0; i < objects.length; i += 1) {
 		ctx.font = "16px Arial";

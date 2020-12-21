@@ -13,16 +13,21 @@ function App() {
 		ctx: CanvasRenderingContext2D,
 		width: number,
 		height: number,
-    detector?: any
+		detector?: any,
 	) => {
 		const results = await detect(detector, video)
-    draw(ctx, video, results)
+		draw(width, height, ctx, video, results)
 	}
 
 	return (
 		<div className="App">
 			<header className="App-header">
-				<CanvasCamera width={600} height={400} onReady={onReady} onDraw={onDraw} />
+				<CanvasCamera
+					width={640}
+					height={480}
+					onReady={onReady}
+					onDraw={onDraw}
+				/>
 			</header>
 		</div>
 	)
