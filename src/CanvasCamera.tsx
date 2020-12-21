@@ -135,7 +135,7 @@ export const CanvasCamera = (props: ICanvasCameraProps) => {
 		}
 
 		setup(ctx, video, width, height, onReady, onDraw)
-	}, [ref, video, width, height, onDraw])
+	}, [ref, video, width, height, onDraw, onReady])
 	const ctx = get2Dctx(ref)
 
 	return (
