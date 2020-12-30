@@ -1,27 +1,13 @@
-const ml5 = require('ml5')
+import '@tensorflow/tfjs-backend-cpu'
+import '@tensorflow/tfjs-backend-webgl'
+import { ObjectDetection, load } from '@tensorflow-models/coco-ssd'
 
-interface IObject {
-	label: string
-	x: number
-	y: number
-	width: number
-	height: number
+export const detect = async (detector: ObjectDetection, video: HTMLVideoElement) => {
+  try {
+    return detector.detect(video)
+  } catch (e) {
+    throw e
+  }
 }
 
-export interface IDetectResult extends IObject {
-	confidence: number
-	normalized: IObject
-}
-
-export const detect = (detector: any, video: HTMLVideoElement) => {
-	return new Promise<IDetectResult[]>((resolve, reject) => {
-		detector.detect(video, (err: string, results: IDetectResult[]) => {
-			if (err) {
-				reject(err)
-			}
-			resolve(results)
-		})
-	})
-}
-
-export const getObjectDetector = async (onReady?: Function) => await ml5.objectDetector('cocossd', onReady)
+export const getObjectDetector = async (onReady?: Function) => await load()
