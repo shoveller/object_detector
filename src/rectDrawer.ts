@@ -1,6 +1,6 @@
-import { IDetectResult } from './objectDetector';
+import { DetectedObject } from "@tensorflow-models/coco-ssd";
 
-export const draw = (width: number, height: number, ctx: CanvasRenderingContext2D, video: HTMLVideoElement, objects?: IDetectResult[]) => {
+export const draw = (width: number, height: number, ctx: CanvasRenderingContext2D, video: HTMLVideoElement, objects?: DetectedObject[]) => {
 	if (!objects?.length) return
 
 	// Clear part of the canvas
@@ -12,10 +12,11 @@ export const draw = (width: number, height: number, ctx: CanvasRenderingContext2
 	for (let i = 0; i < objects.length; i += 1) {
 		ctx.font = "16px Arial";
 		ctx.fillStyle = "green";
-		ctx.fillText(`${objects[i].label} ${(objects[i].confidence * 100).toFixed(0)}%`, objects[i].x + 4, objects[i].y + 16);
+		const [x, y, width, height] = objects[i].bbox
+		ctx.fillText(`${objects[i].class} ${(objects[i].score * 100).toFixed(0)}%`, x + 4, y + 16);
 
 		ctx.beginPath();
-		ctx.rect(objects[i].x, objects[i].y, objects[i].width, objects[i].height);
+		ctx.rect(x, y, width, height);
 		ctx.strokeStyle = "green";
 		ctx.stroke();
 		ctx.closePath();
